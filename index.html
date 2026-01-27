@@ -104,13 +104,33 @@ body{
   position:absolute;
   inset:0;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
   background:#0b0b0c;
   z-index:10;
   font-size:18px;
   font-weight:600;
-  pointer-events:auto;
+}
+
+#loading-text{
+  margin-bottom:12px;
+}
+
+#loading-progress{
+  font-size:14px;
+  color:rgba(255,255,255,.6);
+}
+
+#skip-loading{
+  margin-top:20px;
+  padding:10px 20px;
+  background:#1f7aff;
+  border:none;
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:14px;
 }
 
 #vr-hint{
@@ -143,7 +163,11 @@ body{
 <div id="ui-overlay">
   <div id="info"></div>
   <div id="toast"></div>
-  <div id="loading">Loading model…</div>
+  <div id="loading">
+    <div id="loading-text">Loading model…</div>
+    <div id="loading-progress"></div>
+    <button id="skip-loading">Skip & Use Placeholder</button>
+  </div>
   
   <div id="vr-hint">
     <p>Put on your VR headset and tap below</p>
@@ -189,7 +213,7 @@ body{
   <a-entity id="holder" position="0 1.6 -2.5"></a-entity>
 
   <!-- UI Panel in VR -->
-  <a-entity id="vr-ui" position="0 1.6 -3" visible="false">
+  <a-entity id="vr-ui" position="0 1.6 -3.5" visible="false">
     <!-- Info Text -->
     <a-text id="vr-info" 
             value="" 
@@ -251,15 +275,24 @@ body{
 
 <script>
 const foods=[
- {model:"models/burger/scene.gltf",name:"Burger",price:"₹149",scale:.4},
- {model:"models/pizza/scene.gltf",name:"Pizza",price:"₹299",scale:2},
- {model:"models/fries/scene.gltf",name:"Fries",price:"₹99",scale:.5}
+ {model:"models/burger/scene.gltf",name:"Burger",price:"₹149",scale:.4,color:"#D2691E"},
+ {model:"models/pizza/scene.gltf",name:"Pizza",price:"₹299",scale:2,color:"#FF6347"},
+ {model:"models/fries/scene.gltf",name:"Fries",price:"₹99",scale:.5,color:"#FFD700"},
+ {model:"models/assorted_salad/scene.gltf",name:"Assorted Salad",price:"₹129",scale:6,color:"#90EE90"},
+ {model:"models/chole_bhature/scene.gltf",name:"Chole Bhature",price:"₹89",scale:6,color:"#DEB887"},
+ {model:"models/grilled_sandwich/scene.gltf",name:"Grilled Sandwich",price:"₹49",scale:6,color:"#D2B48C"},
+ {model:"models/palak_paneer/scene.gltf",name:"Palak Paneer",price:"₹79",scale:6,color:"#228B22"},
+ {model:"models/potato_salad/scene.gltf",name:"Potato Salad",price:"₹89",scale:.01,color:"#F0E68C"},
+ {model:"models/samosa/scene.gltf",name:"Samosa",price:"₹39",scale:.5,color:"#DAA520"},
+ {model:"models/soup_bowl/scene.gltf",name:"Soup Bowl",price:"₹69",scale:.2,color:"#FF8C00"}
 ];
 
 const holder=document.getElementById("holder");
 const info=document.getElementById("info");
 const vrInfo=document.getElementById("vr-info");
 const loading=document.getElementById("loading");
+const loadingText=document.getElementById("loading-text");
+const loadingProgress=document.getElementById("loading-progress");
 const toast=document.getElementById("toast");
 const ratingMenu=document.getElementById("ratingMenu");
 const vrUI=document.getElementById("vr-ui");
@@ -271,9 +304,8 @@ let index=0, rating=0;
 let scale=foods[0].scale;
 let autoRotate=true;
 let inVR=false;
-
-const model=document.createElement("a-entity");
-holder.appendChild(model);
+let loadTimeout;
+let currentModel;
 
 /* ---------- Helpers ---------- */
 function showToast(t){
@@ -298,30 +330,112 @@ function updateStars(){
  ratingDisplay.setAttribute("value", `Rating: ${rating}/5`);
 }
 
-/* ---------- Load ---------- */
+/* ---------- Create Placeholder Shape ---------- */
+function createPlaceholder(i){
+ if(currentModel) {
+  holder.removeChild(currentModel);
+ }
+ 
+ const food = foods[i];
+ currentModel = document.createElement("a-entity");
+ 
+ // Create a simple 3D shape based on food type
+ let shape;
+ if(food.name.includes("Burger") || food.name.includes("Sandwich")){
+  shape = `<a-box color="${food.color}" width="0.5" height="0.3" depth="0.5"></a-box>`;
+ } else if(food.name.includes("Pizza")){
+  shape = `<a-cylinder color="${food.color}" radius="0.4" height="0.05"></a-cylinder>`;
+ } else if(food.name.includes("Fries")){
+  shape = `<a-box color="${food.color}" width="0.3" height="0.6" depth="0.3"></a-box>`;
+ } else if(food.name.includes("Bowl") || food.name.includes("Soup")){
+  shape = `<a-cylinder color="${food.color}" radius="0.3" height="0.25"></a-cylinder>`;
+ } else if(food.name.includes("Samosa")){
+  shape = `<a-cone color="${food.color}" radius-bottom="0.3" radius-top="0" height="0.4" rotation="90 0 0"></a-cone>`;
+ } else {
+  shape = `<a-sphere color="${food.color}" radius="0.3"></a-sphere>`;
+ }
+ 
+ currentModel.innerHTML = shape;
+ currentModel.object3D.scale.set(scale, scale, scale);
+ holder.appendChild(currentModel);
+ 
+ loading.style.display="none";
+ showToast("Using placeholder shape");
+}
+
+/* ---------- Load 3D Model ---------- */
 function loadFood(i){
  loading.style.display="flex";
- model.setAttribute("gltf-model",foods[i].model);
- scale=foods[i].scale;
- model.object3D.scale.set(scale,scale,scale);
+ loadingText.textContent = "Loading model…";
+ loadingProgress.textContent = "Attempting to load 3D model";
  
- const infoText = `${foods[i].name} • ${foods[i].price}`;
+ // Clear previous timeout
+ if(loadTimeout) clearTimeout(loadTimeout);
+ 
+ // Remove old model
+ if(currentModel) {
+  holder.removeChild(currentModel);
+ }
+ 
+ const food = foods[i];
+ currentModel = document.createElement("a-entity");
+ 
+ // Set timeout to use placeholder if model doesn't load
+ loadTimeout = setTimeout(()=>{
+  console.warn("Model loading timeout, using placeholder");
+  loadingProgress.textContent = "Model not found, using placeholder";
+  setTimeout(()=>createPlaceholder(i), 500);
+ }, 5000); // 5 second timeout
+ 
+ // Try to load the model
+ currentModel.setAttribute("gltf-model", food.model);
+ scale = food.scale;
+ currentModel.object3D.scale.set(scale, scale, scale);
+ 
+ const infoText = `${food.name} • ${food.price}`;
  info.textContent = infoText;
  vrInfo.setAttribute("value", infoText);
  
- rating=0;
+ rating = 0;
  updateStars();
+ 
+ holder.appendChild(currentModel);
+ 
+ // Model loaded successfully
+ currentModel.addEventListener("model-loaded", ()=>{
+  clearTimeout(loadTimeout);
+  loading.style.display="none";
+  console.log("Model loaded successfully");
+ });
+ 
+ // Model failed to load
+ currentModel.addEventListener("model-error", (e)=>{
+  clearTimeout(loadTimeout);
+  console.error("Model load error:", e);
+  loadingProgress.textContent = "Failed to load model, using placeholder";
+  setTimeout(()=>createPlaceholder(i), 500);
+ });
 }
 
-model.addEventListener("model-loaded",()=>{
- loading.style.display="none";
-});
+/* ---------- Skip Loading Button ---------- */
+document.getElementById("skip-loading").onclick = ()=>{
+ clearTimeout(loadTimeout);
+ createPlaceholder(index);
+};
 
+// Start loading first food
 loadFood(0);
 
 /* ---------- 2D UI ---------- */
-left.onclick=()=>{ index=(index+foods.length-1)%foods.length; loadFood(index); }
-right.onclick=()=>{ index=(index+1)%foods.length; loadFood(index); }
+left.onclick=()=>{ 
+ index=(index+foods.length-1)%foods.length; 
+ loadFood(index); 
+}
+
+right.onclick=()=>{ 
+ index=(index+1)%foods.length; 
+ loadFood(index); 
+}
 
 rate.onclick=()=>{
  ratingMenu.style.display =
@@ -376,12 +490,16 @@ document.getElementById("enter-vr").onclick = ()=>{
 /* ---------- Auto Rotate ---------- */
 AFRAME.registerComponent("spin",{
  tick: function(time, timeDelta){
-  if(autoRotate){
-   model.object3D.rotation.y += 0.002;
+  if(autoRotate && currentModel){
+   currentModel.object3D.rotation.y += 0.002;
   }
  }
 });
-model.setAttribute("spin","");
+
+// Add spin component to scene
+const spinEntity = document.createElement("a-entity");
+spinEntity.setAttribute("spin", "");
+scene.appendChild(spinEntity);
 
 /* ---------- Touch/Mouse Controls (2D mode) ---------- */
 let dragging=false,lx=0,ly=0;
@@ -390,14 +508,16 @@ function start(x,y){
  if(inVR) return;
  dragging=true; lx=x; ly=y; autoRotate=false;
 }
+
 function move(x,y){
- if(inVR) return;
- const yaw = model.object3D.rotation.y + (x-lx)*0.01;
- let pitch = model.object3D.rotation.x + (y-ly)*0.01;
+ if(inVR || !currentModel) return;
+ const yaw = currentModel.object3D.rotation.y + (x-lx)*0.01;
+ let pitch = currentModel.object3D.rotation.x + (y-ly)*0.01;
  pitch=Math.max(-1.4,Math.min(1.4,pitch));
  lx=x; ly=y;
- model.object3D.rotation.set(pitch,yaw,0);
+ currentModel.object3D.rotation.set(pitch,yaw,0);
 }
+
 function end(){
  dragging=false;
  setTimeout(()=>autoRotate=true,2000);
@@ -417,10 +537,10 @@ document.addEventListener("mousemove",e=>dragging&&move(e.clientX,e.clientY));
 document.addEventListener("mouseup",end);
 
 document.addEventListener("wheel",e=>{
- if(inVR) return;
+ if(inVR || !currentModel) return;
  scale+=e.deltaY*-0.001;
  scale=Math.max(.2,Math.min(2.5,scale));
- model.object3D.scale.set(scale,scale,scale);
+ currentModel.object3D.scale.set(scale,scale,scale);
 });
 </script>
 
