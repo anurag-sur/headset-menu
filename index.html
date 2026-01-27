@@ -1,52 +1,426 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>VR Model Loader</title>
+<title>VR Food Menu</title>
+
 <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:'Inter',sans-serif;
+  background:#0b0b0c;
+  color:white;
+}
+
+/* ---------- UI Overlay ---------- */
+#ui-overlay{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  pointer-events:none;
+}
+
+#info{
+  position:absolute;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:10px 18px;
+  background:rgba(20,20,22,.85);
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  pointer-events:auto;
+}
+
+.btn{
+  position:absolute;
+  bottom:20px;
+  padding:12px 18px;
+  background:rgba(30,30,32,.9);
+  border:1px solid rgba(255,255,255,.12);
+  color:white;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .15s, transform .1s;
+  pointer-events:auto;
+}
+.btn:active{
+  transform:scale(.96);
+  background:rgba(50,50,55,.95);
+}
+
+#left{ left:16px; }
+#right{ right:16px; }
+#rate{
+  left:50%;
+  transform:translateX(-50%);
+}
+
+#ratingMenu{
+  position:absolute;
+  bottom:78px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:10px 16px;
+  background:rgba(20,20,22,.92);
+  border-radius:16px;
+  display:none;
+  pointer-events:auto;
+}
+
+.star{
+  font-size:28px;
+  cursor:pointer;
+  color:rgba(255,255,255,.25);
+  transition:color .15s, transform .1s;
+}
+.star.active{ color:#FFD54F; }
+.star:active{ transform:scale(1.2); }
+
+#toast{
+  position:absolute;
+  top:72px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1f7aff;
+  padding:8px 14px;
+  border-radius:12px;
+  font-size:14px;
+  opacity:0;
+  transition:opacity .3s;
+}
+
+#loading{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#0b0b0c;
+  z-index:10;
+  font-size:18px;
+  font-weight:600;
+  pointer-events:auto;
+}
+
+#vr-hint{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  font-size:14px;
+  color:rgba(255,255,255,.7);
+  pointer-events:auto;
+}
+
+#vr-hint button{
+  margin-top:12px;
+  padding:14px 28px;
+  background:#1f7aff;
+  border:none;
+  color:white;
+  border-radius:12px;
+  font-size:18px;
+  font-weight:600;
+  cursor:pointer;
+}
+</style>
 </head>
 
 <body>
 
-<a-scene vr-mode-ui="enabled:true" background="color:#050507">
+<div id="ui-overlay">
+  <div id="info"></div>
+  <div id="toast"></div>
+  <div id="loading">Loading model…</div>
+  
+  <div id="vr-hint">
+    <p>Put on your VR headset and tap below</p>
+    <button id="enter-vr">Enter VR Mode</button>
+  </div>
 
-  <!-- Assets -->
-  <a-assets timeout="10000">
-    <a-asset-item
-      id="foodModel"
-      src="models/burger/scene.gltf">
-    </a-asset-item>
-  </a-assets>
+  <button id="left" class="btn">◀</button>
+  <button id="rate" class="btn">Rate</button>
+  <button id="right" class="btn">▶</button>
+
+  <div id="ratingMenu">
+    <span class="star" data-s="1">★</span>
+    <span class="star" data-s="2">★</span>
+    <span class="star" data-s="3">★</span>
+    <span class="star" data-s="4">★</span>
+    <span class="star" data-s="5">★</span>
+  </div>
+</div>
+
+<a-scene id="scene" 
+         vr-mode-ui="enabled:true"
+         device-orientation-permission-ui="enabled:true">
+
+  <!-- Environment -->
+  <a-sky color="#0b0b0c"></a-sky>
+  
+  <!-- Lighting -->
+  <a-entity light="type:ambient;intensity:0.8"></a-entity>
+  <a-entity light="type:directional;intensity:0.5" position="2 3 1"></a-entity>
+  <a-entity light="type:point;intensity:0.3" position="-2 2 -1"></a-entity>
 
   <!-- Camera -->
-  <a-entity camera look-controls position="0 1.6 0"></a-entity>
+  <a-camera>
+    <a-cursor
+      color="#1f7aff"
+      raycaster="objects: .clickable"
+      fuse="true"
+      fuse-timeout="1500">
+    </a-cursor>
+  </a-camera>
 
-  <!-- Lights -->
-  <a-entity light="type:ambient; intensity:1"></a-entity>
-  <a-entity light="type:directional; intensity:0.6" position="1 2 1"></a-entity>
+  <!-- Food Model Holder -->
+  <a-entity id="holder" position="0 1.6 -2.5"></a-entity>
 
-  <!-- Model -->
-  <a-entity
-    gltf-model="#foodModel"
-    position="0 1.4 -3"
-    scale="0.5 0.5 0.5"
-    rotation="0 45 0">
+  <!-- UI Panel in VR -->
+  <a-entity id="vr-ui" position="0 1.6 -3" visible="false">
+    <!-- Info Text -->
+    <a-text id="vr-info" 
+            value="" 
+            align="center" 
+            width="3"
+            position="0 0.8 0"
+            color="#ffffff"></a-text>
+    
+    <!-- Navigation Buttons -->
+    <a-box class="clickable nav-btn" 
+           id="vr-left"
+           position="-0.6 0.4 0" 
+           width="0.3" 
+           height="0.15" 
+           depth="0.05"
+           color="#1e1e20"
+           material="opacity:0.9">
+      <a-text value="◀ PREV" 
+              align="center" 
+              position="0 0 0.03" 
+              width="1.5"
+              color="#ffffff"></a-text>
+    </a-box>
+
+    <a-box class="clickable nav-btn" 
+           id="vr-right"
+           position="0.6 0.4 0" 
+           width="0.3" 
+           height="0.15" 
+           depth="0.05"
+           color="#1e1e20"
+           material="opacity:0.9">
+      <a-text value="NEXT ▶" 
+              align="center" 
+              position="0 0 0.03" 
+              width="1.5"
+              color="#ffffff"></a-text>
+    </a-box>
+
+    <!-- Rating Stars in VR -->
+    <a-entity id="vr-stars" position="0 0.1 0">
+      <a-text class="clickable vr-star" data-s="1" value="★" position="-0.4 0 0" width="2" color="#ffffff40"></a-text>
+      <a-text class="clickable vr-star" data-s="2" value="★" position="-0.2 0 0" width="2" color="#ffffff40"></a-text>
+      <a-text class="clickable vr-star" data-s="3" value="★" position="0 0 0" width="2" color="#ffffff40"></a-text>
+      <a-text class="clickable vr-star" data-s="4" value="★" position="0.2 0 0" width="2" color="#ffffff40"></a-text>
+      <a-text class="clickable vr-star" data-s="5" value="★" position="0.4 0 0" width="2" color="#ffffff40"></a-text>
+    </a-entity>
+
+    <!-- Rating Display -->
+    <a-text id="rating-display" 
+            value="Rating: 0/5" 
+            align="center" 
+            position="0 -0.15 0"
+            width="2"
+            color="#FFD54F"></a-text>
   </a-entity>
-
-  <!-- Floor -->
-  <a-plane rotation="-90 0 0" width="20" height="20" color="#111"></a-plane>
 
 </a-scene>
 
 <script>
-const model = document.querySelector('[gltf-model]');
+const foods=[
+ {model:"models/burger/scene.gltf",name:"Burger",price:"₹149",scale:.4},
+ {model:"models/pizza/scene.gltf",name:"Pizza",price:"₹299",scale:2},
+ {model:"models/fries/scene.gltf",name:"Fries",price:"₹99",scale:.5}
+];
 
-model.addEventListener('model-loaded', () => {
-  console.log('✅ MODEL LOADED');
+const holder=document.getElementById("holder");
+const info=document.getElementById("info");
+const vrInfo=document.getElementById("vr-info");
+const loading=document.getElementById("loading");
+const toast=document.getElementById("toast");
+const ratingMenu=document.getElementById("ratingMenu");
+const vrUI=document.getElementById("vr-ui");
+const vrHint=document.getElementById("vr-hint");
+const scene=document.getElementById("scene");
+const ratingDisplay=document.getElementById("rating-display");
+
+let index=0, rating=0;
+let scale=foods[0].scale;
+let autoRotate=true;
+let inVR=false;
+
+const model=document.createElement("a-entity");
+holder.appendChild(model);
+
+/* ---------- Helpers ---------- */
+function showToast(t){
+ toast.textContent=t;
+ toast.style.opacity=1;
+ setTimeout(()=>toast.style.opacity=0,1200);
+}
+
+function updateStars(){
+ // 2D UI stars
+ document.querySelectorAll(".star").forEach(s=>{
+  s.classList.toggle("active",s.dataset.s<=rating);
+ });
+ 
+ // VR stars
+ document.querySelectorAll(".vr-star").forEach(s=>{
+  const active = s.getAttribute("data-s")<=rating;
+  s.setAttribute("color", active ? "#FFD54F" : "#ffffff40");
+ });
+ 
+ // Update rating display
+ ratingDisplay.setAttribute("value", `Rating: ${rating}/5`);
+}
+
+/* ---------- Load ---------- */
+function loadFood(i){
+ loading.style.display="flex";
+ model.setAttribute("gltf-model",foods[i].model);
+ scale=foods[i].scale;
+ model.object3D.scale.set(scale,scale,scale);
+ 
+ const infoText = `${foods[i].name} • ${foods[i].price}`;
+ info.textContent = infoText;
+ vrInfo.setAttribute("value", infoText);
+ 
+ rating=0;
+ updateStars();
+}
+
+model.addEventListener("model-loaded",()=>{
+ loading.style.display="none";
 });
 
-model.addEventListener('model-error', (e) => {
-  console.error('❌ MODEL FAILED', e);
+loadFood(0);
+
+/* ---------- 2D UI ---------- */
+left.onclick=()=>{ index=(index+foods.length-1)%foods.length; loadFood(index); }
+right.onclick=()=>{ index=(index+1)%foods.length; loadFood(index); }
+
+rate.onclick=()=>{
+ ratingMenu.style.display =
+ ratingMenu.style.display==="block"?"none":"block";
+};
+
+document.querySelectorAll(".star").forEach(s=>{
+ s.onclick=()=>{
+  rating=s.dataset.s;
+  updateStars();
+  showToast(`Rated ${rating} ★`);
+ };
+});
+
+/* ---------- VR UI ---------- */
+document.getElementById("vr-left").addEventListener("click", ()=>{
+ index=(index+foods.length-1)%foods.length; 
+ loadFood(index);
+});
+
+document.getElementById("vr-right").addEventListener("click", ()=>{
+ index=(index+1)%foods.length; 
+ loadFood(index);
+});
+
+document.querySelectorAll(".vr-star").forEach(s=>{
+ s.addEventListener("click", ()=>{
+  rating=s.getAttribute("data-s");
+  updateStars();
+ });
+});
+
+/* ---------- VR Mode Detection ---------- */
+scene.addEventListener("enter-vr", ()=>{
+ inVR = true;
+ vrUI.setAttribute("visible", "true");
+ document.getElementById("ui-overlay").style.display = "none";
+ autoRotate = true;
+});
+
+scene.addEventListener("exit-vr", ()=>{
+ inVR = false;
+ vrUI.setAttribute("visible", "false");
+ document.getElementById("ui-overlay").style.display = "block";
+});
+
+/* ---------- Enter VR Button ---------- */
+document.getElementById("enter-vr").onclick = ()=>{
+ scene.enterVR();
+};
+
+/* ---------- Auto Rotate ---------- */
+AFRAME.registerComponent("spin",{
+ tick: function(time, timeDelta){
+  if(autoRotate){
+   model.object3D.rotation.y += 0.002;
+  }
+ }
+});
+model.setAttribute("spin","");
+
+/* ---------- Touch/Mouse Controls (2D mode) ---------- */
+let dragging=false,lx=0,ly=0;
+
+function start(x,y){
+ if(inVR) return;
+ dragging=true; lx=x; ly=y; autoRotate=false;
+}
+function move(x,y){
+ if(inVR) return;
+ const yaw = model.object3D.rotation.y + (x-lx)*0.01;
+ let pitch = model.object3D.rotation.x + (y-ly)*0.01;
+ pitch=Math.max(-1.4,Math.min(1.4,pitch));
+ lx=x; ly=y;
+ model.object3D.rotation.set(pitch,yaw,0);
+}
+function end(){
+ dragging=false;
+ setTimeout(()=>autoRotate=true,2000);
+}
+
+document.addEventListener("touchstart",e=>{
+ if(e.touches.length===1) start(e.touches[0].clientX,e.touches[0].clientY);
+});
+document.addEventListener("touchmove",e=>{
+ if(dragging && e.touches.length===1)
+  move(e.touches[0].clientX,e.touches[0].clientY);
+});
+document.addEventListener("touchend",end);
+
+document.addEventListener("mousedown",e=>start(e.clientX,e.clientY));
+document.addEventListener("mousemove",e=>dragging&&move(e.clientX,e.clientY));
+document.addEventListener("mouseup",end);
+
+document.addEventListener("wheel",e=>{
+ if(inVR) return;
+ scale+=e.deltaY*-0.001;
+ scale=Math.max(.2,Math.min(2.5,scale));
+ model.object3D.scale.set(scale,scale,scale);
 });
 </script>
 
