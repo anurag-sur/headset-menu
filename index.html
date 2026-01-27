@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VR View</title>
+
+<style>
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  overflow: hidden;
+}
+
+/* Main VR container */
+#vr {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Each eye */
+.eye {
+  width: 50vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Circular lens view */
+.eye iframe {
+  width: 90vmin;
+  height: 90vmin;
+  border-radius: 50%;
+  border: none;
+  transform: scale(1.25);
+}
+
+/* Stereo offset */
+.left iframe {
+  transform: translateX(14px) scale(1.25);
+}
+
+.right iframe {
+  transform: translateX(-14px) scale(1.25);
+}
+</style>
+</head>
+
+<body>
+
+<div id="vr">
+  <div class="eye left">
+    <iframe src="https://ar-menu-phi.vercel.app/"></iframe>
+  </div>
+
+  <div class="eye right">
+    <iframe src="https://ar-menu-phi.vercel.app/"></iframe>
+  </div>
+</div>
+
+</body>
+</html>
