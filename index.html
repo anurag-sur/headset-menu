@@ -2,23 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AR Food Menu VR</title>
+<title>VR Food Menu</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- A-Frame -->
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
 <script>
+// ===== FOOD DATA =====
 const foods = [
-  { model: "burger/scene.gltf", name: "Burger", price: "₹149", scale: 0.4, color: "#D2691E" },
-  { model: "pizza/scene.gltf", name: "Pizza", price: "₹299", scale: 2.0, color: "#FF6347" },
-  { model: "fries/scene.gltf", name: "Fries", price: "₹99",  scale: 0.5, color: "#FFD700" },
-  { model: "samosa/scene.gltf", name: "Samosa", price: "₹25",  scale: 0.6, color: "#C68642" },
-  { model: "chole_bhature/scene.gltf", name: "Chole Bhature", price: "₹180", scale: 0.7, color: "#A0522D" },
-  { model: "grilled_sandwich/scene.gltf", name: "Grilled Sandwich", price: "₹129", scale: 0.6, color: "#DEB887" },
-  { model: "palak_paneer/scene.gltf", name: "Palak Paneer", price: "₹249", scale: 0.7, color: "#2E8B57" },
-  { model: "potato_salad/scene.gltf", name: "Potato Salad", price: "₹119", scale: 0.6, color: "#F5DEB3" }
+  { model:"burger/scene.gltf",           name:"Burger",           price:"₹149", scale:0.4, color:"#D2691E" },
+  { model:"pizza/scene.gltf",            name:"Pizza",            price:"₹299", scale:2.0, color:"#FF6347" },
+  { model:"fries/scene.gltf",            name:"Fries",            price:"₹99",  scale:0.5, color:"#FFD700" },
+  { model:"samosa/scene.gltf",           name:"Samosa",           price:"₹25",  scale:0.6, color:"#C68642" },
+  { model:"chole_bhature/scene.gltf",    name:"Chole Bhature",    price:"₹180", scale:0.7, color:"#A0522D" },
+  { model:"grilled_sandwich/scene.gltf", name:"Grilled Sandwich", price:"₹129", scale:0.6, color:"#DEB887" },
+  { model:"palak_paneer/scene.gltf",     name:"Palak Paneer",     price:"₹249", scale:0.7, color:"#2E8B57" },
+  { model:"potato_salad/scene.gltf",     name:"Potato Salad",     price:"₹119", scale:0.6, color:"#F5DEB3" }
 ];
 
+// ===== BUTTON CREATOR COMPONENT =====
 AFRAME.registerComponent("food-buttons", {
   init() {
     const panel = this.el;
@@ -30,12 +33,12 @@ AFRAME.registerComponent("food-buttons", {
       const btn = document.createElement("a-plane");
 
       btn.setAttribute("class", "clickable");
-      btn.setAttribute("width", "0.5");
+      btn.setAttribute("width", "0.55");
       btn.setAttribute("height", "0.25");
       btn.setAttribute("color", food.color);
-      btn.setAttribute("position", `${(i - 1) * 0.7} 0 0`);
+      btn.setAttribute("position", `${(i % 4 - 1.5) * 0.7} ${i < 4 ? 0.3 : -0.1} 0`);
 
-      // Hover
+      // Hover effect
       btn.addEventListener("mouseenter", () => {
         cursor.setAttribute("material", "color", food.color);
         btn.setAttribute("opacity", "0.8");
@@ -46,20 +49,20 @@ AFRAME.registerComponent("food-buttons", {
         btn.setAttribute("opacity", "1");
       });
 
-      // Click
+      // Click = switch model
       btn.addEventListener("click", () => {
         model.setAttribute("gltf-model", food.model);
         model.setAttribute("scale", `${food.scale} ${food.scale} ${food.scale}`);
         label.setAttribute("value", `${food.name} • ${food.price}`);
       });
 
-      // Text
+      // Button text
       const text = document.createElement("a-text");
       text.setAttribute("value", food.name);
       text.setAttribute("align", "center");
       text.setAttribute("color", "black");
       text.setAttribute("position", "0 0 0.01");
-      text.setAttribute("width", "2");
+      text.setAttribute("width", "2.5");
 
       btn.appendChild(text);
       panel.appendChild(btn);
@@ -69,11 +72,11 @@ AFRAME.registerComponent("food-buttons", {
 </script>
 </head>
 
-<body style="margin:0">
+<body style="margin:0; overflow:hidden;">
 
-<a-scene background="color: #0b0b0b" vr-mode-ui="enabled:true">
+<a-scene background="color:#0b0b0b" vr-mode-ui="enabled:true">
 
-  <!-- Camera + Cursor -->
+  <!-- CAMERA + CURSOR -->
   <a-entity camera look-controls position="0 1.6 0">
     <a-cursor
       id="cursor"
@@ -85,11 +88,11 @@ AFRAME.registerComponent("food-buttons", {
     </a-cursor>
   </a-entity>
 
-  <!-- Lights -->
+  <!-- LIGHTS -->
   <a-light type="ambient" intensity="0.7"></a-light>
   <a-light type="directional" position="2 5 3" intensity="1"></a-light>
 
-  <!-- Food Model -->
+  <!-- MAIN 3D MODEL -->
   <a-entity
     id="mainModel"
     gltf-model="burger/scene.gltf"
@@ -98,7 +101,7 @@ AFRAME.registerComponent("food-buttons", {
     animation="property: rotation; to: 0 360 0; loop:true; dur:14000">
   </a-entity>
 
-  <!-- Name + Price -->
+  <!-- FOOD NAME + PRICE -->
   <a-text
     id="foodLabel"
     value="Burger • ₹149"
@@ -108,11 +111,13 @@ AFRAME.registerComponent("food-buttons", {
     width="4">
   </a-text>
 
-  <!-- Buttons -->
-  <a-entity position="0 0.9 -1.5" food-buttons></a-entity>
+  <!-- BUTTON PANEL -->
+  <a-entity position="0 0.85 -1.6" food-buttons></a-entity>
 
+  <!-- SKY -->
   <a-sky color="#111"></a-sky>
 
 </a-scene>
+
 </body>
 </html>
