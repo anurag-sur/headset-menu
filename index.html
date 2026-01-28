@@ -11,64 +11,53 @@
 <script>
 // ===== FOOD DATA =====
 const foods = [
-  { model:"burger/scene.gltf",           name:"Burger",           price:"₹149", scale:0.4, color:"#D2691E" },
-  { model:"pizza/scene.gltf",            name:"Pizza",            price:"₹299", scale:2.0, color:"#FF6347" },
-  { model:"fries/scene.gltf",            name:"Fries",            price:"₹99",  scale:0.5, color:"#FFD700" },
-  { model:"samosa/scene.gltf",           name:"Samosa",           price:"₹25",  scale:0.6, color:"#C68642" },
-  { model:"chole_bhature/scene.gltf",    name:"Chole Bhature",    price:"₹180", scale:0.7, color:"#A0522D" },
-  { model:"grilled_sandwich/scene.gltf", name:"Grilled Sandwich", price:"₹129", scale:0.6, color:"#DEB887" },
-  { model:"palak_paneer/scene.gltf",     name:"Palak Paneer",     price:"₹249", scale:0.7, color:"#2E8B57" },
-  { model:"potato_salad/scene.gltf",     name:"Potato Salad",     price:"₹119", scale:0.6, color:"#F5DEB3" }
+  { model:"burger/scene.gltf", name:"Burger", price:"₹149", scale:0.4 },
+  { model:"pizza/scene.gltf",  name:"Pizza",  price:"₹299", scale:2.0 },
+  { model:"fries/scene.gltf",  name:"Fries",  price:"₹99",  scale:0.5 },
+  { model:"samosa/scene.gltf", name:"Samosa", price:"₹25",  scale:0.6 }
 ];
 
-// ===== BUTTON CREATOR COMPONENT =====
-AFRAME.registerComponent("food-buttons", {
+let index = 0;
+
+// ===== UPDATE MODEL + TEXT =====
+function updateFood() {
+  const food = foods[index];
+  const model = document.querySelector("#mainModel");
+  const label = document.querySelector("#foodLabel");
+
+  model.setAttribute("gltf-model", food.model);
+  model.setAttribute("scale", `${food.scale} ${food.scale} ${food.scale}`);
+  label.setAttribute("value", `${food.name} • ${food.price}`);
+}
+
+// ===== ARROW BUTTON COMPONENT =====
+AFRAME.registerComponent("arrow", {
+  schema: { dir: { type: "string" } },
+
   init() {
-    const panel = this.el;
     const cursor = document.querySelector("#cursor");
-    const model = document.querySelector("#mainModel");
-    const label = document.querySelector("#foodLabel");
 
-    foods.forEach((food, i) => {
-      const btn = document.createElement("a-plane");
+    this.el.addEventListener("mouseenter", () => {
+      cursor.setAttribute("material", "color", "#00ffd5");
+    });
 
-      btn.setAttribute("class", "clickable");
-      btn.setAttribute("width", "0.55");
-      btn.setAttribute("height", "0.25");
-      btn.setAttribute("color", food.color);
-      btn.setAttribute("position", `${(i % 4 - 1.5) * 0.7} ${i < 4 ? 0.3 : -0.1} 0`);
+    this.el.addEventListener("mouseleave", () => {
+      cursor.setAttribute("material", "color", "white");
+    });
 
-      // Hover effect
-      btn.addEventListener("mouseenter", () => {
-        cursor.setAttribute("material", "color", food.color);
-        btn.setAttribute("opacity", "0.8");
-      });
-
-      btn.addEventListener("mouseleave", () => {
-        cursor.setAttribute("material", "color", "white");
-        btn.setAttribute("opacity", "1");
-      });
-
-      // Click = switch model
-      btn.addEventListener("click", () => {
-        model.setAttribute("gltf-model", food.model);
-        model.setAttribute("scale", `${food.scale} ${food.scale} ${food.scale}`);
-        label.setAttribute("value", `${food.name} • ${food.price}`);
-      });
-
-      // Button text
-      const text = document.createElement("a-text");
-      text.setAttribute("value", food.name);
-      text.setAttribute("align", "center");
-      text.setAttribute("color", "black");
-      text.setAttribute("position", "0 0 0.01");
-      text.setAttribute("width", "2.5");
-
-      btn.appendChild(text);
-      panel.appendChild(btn);
+    this.el.addEventListener("click", () => {
+      if (this.data.dir === "left") {
+        index = (index - 1 + foods.length) % foods.length;
+      } else {
+        index = (index + 1) % foods.length;
+      }
+      updateFood();
     });
   }
 });
+
+// ✅ VERY IMPORTANT: load first food properly
+window.addEventListener("load", updateFood);
 </script>
 </head>
 
@@ -82,7 +71,7 @@ AFRAME.registerComponent("food-buttons", {
       id="cursor"
       raycaster="objects: .clickable"
       fuse="true"
-      fuse-timeout="700"
+      fuse-timeout="600"
       geometry="primitive:ring; radiusInner:0.015; radiusOuter:0.025"
       material="color:white; shader:flat">
     </a-cursor>
@@ -92,29 +81,41 @@ AFRAME.registerComponent("food-buttons", {
   <a-light type="ambient" intensity="0.7"></a-light>
   <a-light type="directional" position="2 5 3" intensity="1"></a-light>
 
-  <!-- MAIN 3D MODEL -->
+  <!-- MAIN MODEL (NO HARD-CODED FOOD) -->
   <a-entity
     id="mainModel"
-    gltf-model="burger/scene.gltf"
     position="0 1.2 -3"
-    scale="0.4 0.4 0.4"
     animation="property: rotation; to: 0 360 0; loop:true; dur:14000">
   </a-entity>
 
-  <!-- FOOD NAME + PRICE -->
+  <!-- FOOD LABEL -->
   <a-text
     id="foodLabel"
-    value="Burger • ₹149"
-    position="0 2.3 -2.5"
+    position="0 2.6 -3.2"
     align="center"
     color="white"
     width="4">
   </a-text>
 
-  <!-- BUTTON PANEL -->
-  <a-entity position="0 0.85 -1.6" food-buttons></a-entity>
+  <!-- LEFT ARROW -->
+  <a-entity
+    class="clickable"
+    arrow="dir: left"
+    position="-1.6 1.2 -2"
+    geometry="primitive: triangle"
+    material="color:white; side:double"
+    rotation="0 0 180">
+  </a-entity>
 
-  <!-- SKY -->
+  <!-- RIGHT ARROW -->
+  <a-entity
+    class="clickable"
+    arrow="dir: right"
+    position="1.6 1.2 -2"
+    geometry="primitive: triangle"
+    material="color:white; side:double">
+  </a-entity>
+
   <a-sky color="#111"></a-sky>
 
 </a-scene>
