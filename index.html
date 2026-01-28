@@ -1,124 +1,223 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>VR Food Menu</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <title>VR Food Viewer</title>
 
-<!-- A-Frame -->
-<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
-<script>
-// ===== FOOD DATA =====
-const foods = [
-  { model:"burger/scene.gltf", name:"Burger", price:"₹149", scale:0.4 },
-  { model:"pizza/scene.gltf",  name:"Pizza",  price:"₹299", scale:2.0 },
-  { model:"fries/scene.gltf",  name:"Fries",  price:"₹99",  scale:0.5 },
-  { model:"samosa/scene.gltf", name:"Samosa", price:"₹25",  scale:0.6 }
-];
+  <style>
+    body { margin: 0; overflow: hidden; }
 
-let index = 0;
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: black;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+      font-size: 2rem;
+      z-index: 999;
+    }
+  </style>
 
-// ===== UPDATE MODEL + TEXT =====
-function updateFood() {
-  const food = foods[index];
-  const model = document.querySelector("#mainModel");
-  const label = document.querySelector("#foodLabel");
+  <script>
+  const foods = [
+    {
+      id: "burger",
+      model: "burger/scene.gltf",
+      name: "Burger",
+      price: "₹149",
+      scale: 0.4,
+      color: "#D2691E"
+    },
+    {
+      id: "pizza",
+      model: "pizza/scene.gltf",
+      name: "Pizza",
+      price: "₹299",
+      scale: 2.0,
+      color: "#FF6347"
+    },
+    {
+      id: "fries",
+      model: "fries/scene.gltf",
+      name: "Fries",
+      price: "₹99",
+      scale: 0.5,
+      color: "#FFD700"
+    },
+    {
+      id: "samosa",
+      model: "samosa/scene.gltf",
+      name: "Samosa",
+      price: "₹25",
+      scale: 0.6,
+      color: "#C68642"
+    },
+    {
+      id: "choleBhature",
+      model: "chole_bhature/scene.gltf",
+      name: "Chole Bhature",
+      price: "₹180",
+      scale: 0.7,
+      color: "#A0522D"
+    },
+    {
+      id: "grilledSandwich",
+      model: "grilled_sandwich/scene.gltf",
+      name: "Grilled Sandwich",
+      price: "₹129",
+      scale: 0.6,
+      color: "#DEB887"
+    },
+    {
+      id: "palakPaneer",
+      model: "palak_paneer/scene.gltf",
+      name: "Palak Paneer",
+      price: "₹249",
+      scale: 0.7,
+      color: "#2E8B57"
+    },
+    {
+      id: "potatoSalad",
+      model: "potato_salad/scene.gltf",
+      name: "Potato Salad",
+      price: "₹119",
+      scale: 0.6,
+      color: "#F5DEB3"
+    }
+  ];
 
-  model.setAttribute("gltf-model", food.model);
-  model.setAttribute("scale", `${food.scale} ${food.scale} ${food.scale}`);
-  label.setAttribute("value", `${food.name} • ${food.price}`);
-}
+    let index = 0;
 
-// ===== ARROW BUTTON COMPONENT =====
-AFRAME.registerComponent("arrow", {
-  schema: { dir: { type: "string" } },
+    function updateModel() {
+      const model = document.querySelector("#mainModel");
+      const label = document.querySelector("#foodLabel");
 
-  init() {
-    const cursor = document.querySelector("#cursor");
+      model.setAttribute("gltf-model", `#${foods[index].id}`);
+      model.setAttribute("scale",
+        `${foods[index].scale} ${foods[index].scale} ${foods[index].scale}`
+      );
 
-    this.el.addEventListener("mouseenter", () => {
-      cursor.setAttribute("material", "color", "#00ffd5");
+      label.setAttribute(
+        "value",
+        `${foods[index].name} • ${foods[index].price}`
+      );
+    }
+
+    function nextModel() {
+      index = (index + 1) % foods.length;
+      updateModel();
+    }
+
+    function prevModel() {
+      index = (index - 1 + foods.length) % foods.length;
+      updateModel();
+    }
+
+    // LOADING TRACKER
+    document.addEventListener("DOMContentLoaded", () => {
+      const assets = document.querySelector("a-assets");
+      const loader = document.querySelector("#loader");
+      const text = document.querySelector("#loadText");
+
+      let loaded = 0;
+      const total = foods.length;
+
+      assets.addEventListener("loaded", () => {
+        loader.style.display = "none";
+        updateModel();
+      });
+
+      foods.forEach(() => {
+        loaded++;
+        text.innerText = `Loading… ${Math.round((loaded / total) * 100)}%`;
+      });
     });
-
-    this.el.addEventListener("mouseleave", () => {
-      cursor.setAttribute("material", "color", "white");
-    });
-
-    this.el.addEventListener("click", () => {
-      if (this.data.dir === "left") {
-        index = (index - 1 + foods.length) % foods.length;
-      } else {
-        index = (index + 1) % foods.length;
-      }
-      updateFood();
-    });
-  }
-});
-
-// ✅ VERY IMPORTANT: load first food properly
-window.addEventListener("load", updateFood);
-</script>
+  </script>
 </head>
 
-<body style="margin:0; overflow:hidden;">
+<body>
 
-<a-scene background="color:#0b0b0b" vr-mode-ui="enabled:true">
+<!-- LOADING SCREEN -->
+<div id="loader">
+  <div id="loadText">Loading… 0%</div>
+</div>
+
+<a-scene vr-mode-ui="enabled: true">
+
+  <!-- PRELOAD ASSETS -->
+  <a-assets>
+    <a-asset-item id="burger" src="burger/scene.gltf"></a-asset-item>
+    <a-asset-item id="pizza" src="pizza/scene.gltf"></a-asset-item>
+    <a-asset-item id="fries" src="fries/scene.gltf"></a-asset-item>
+    <a-asset-item id="samosa" src="samosa/scene.gltf"></a-asset-item>
+    <a-asset-item id="choleBhature" src="chole_bhature/scene.gltf"></a-asset-item>
+    <a-asset-item id="grilledSandwich" src="grilled_sandwich/scene.gltf"></a-asset-item>
+    <a-asset-item id="palakPaneer" src="palak_paneer/scene.gltf"></a-asset-item>
+    <a-asset-item id="potatoSalad" src="potato_salad/scene.gltf"></a-asset-item>
+  </a-assets>
 
   <!-- CAMERA + CURSOR -->
-  <a-entity camera look-controls position="0 1.6 0">
-    <a-cursor
-      id="cursor"
-      raycaster="objects: .clickable"
-      fuse="true"
-      fuse-timeout="600"
-      geometry="primitive:ring; radiusInner:0.015; radiusOuter:0.025"
-      material="color:white; shader:flat">
-    </a-cursor>
+  <a-entity position="0 1.6 0">
+    <a-camera>
+      <a-cursor
+        fuse="true"
+        fuse-timeout="600"
+        color="white"
+        animation__hover="property: color; startEvents: mouseenter; to: yellow; dur: 150"
+        animation__leave="property: color; startEvents: mouseleave; to: white; dur: 150">
+      </a-cursor>
+    </a-camera>
   </a-entity>
 
-  <!-- LIGHTS -->
-  <a-light type="ambient" intensity="0.7"></a-light>
-  <a-light type="directional" position="2 5 3" intensity="1"></a-light>
-
-  <!-- MAIN MODEL (NO HARD-CODED FOOD) -->
+  <!-- MODEL -->
   <a-entity
     id="mainModel"
     position="0 1.2 -3"
     animation="property: rotation; to: 0 360 0; loop:true; dur:14000">
   </a-entity>
 
-  <!-- FOOD LABEL -->
+  <!-- LABEL -->
   <a-text
     id="foodLabel"
-    position="0 2.6 -3.2"
+    position="0 2.5 -3"
     align="center"
     color="white"
     width="4">
   </a-text>
 
   <!-- LEFT ARROW -->
-  <a-entity
-    class="clickable"
-    arrow="dir: left"
-    position="-1.6 1.2 -2"
-    geometry="primitive: triangle"
-    material="color:white; side:double"
-    rotation="0 0 180">
-  </a-entity>
+  <a-plane
+    position="-1.6 1.2 -3"
+    width="0.6"
+    height="0.6"
+    color="#222"
+    onclick="prevModel()"
+    animation__hover="property: material.color; startEvents: mouseenter; to: #555; dur: 150"
+    animation__leave="property: material.color; startEvents: mouseleave; to: #222; dur: 150">
+    <a-text value="←" align="center" position="0 0 0.01" color="white" width="4"></a-text>
+  </a-plane>
 
   <!-- RIGHT ARROW -->
-  <a-entity
-    class="clickable"
-    arrow="dir: right"
-    position="1.6 1.2 -2"
-    geometry="primitive: triangle"
-    material="color:white; side:double">
-  </a-entity>
+  <a-plane
+    position="1.6 1.2 -3"
+    width="0.6"
+    height="0.6"
+    color="#222"
+    onclick="nextModel()"
+    animation__hover="property: material.color; startEvents: mouseenter; to: #555; dur: 150"
+    animation__leave="property: material.color; startEvents: mouseleave; to: #222; dur: 150">
+    <a-text value="→" align="center" position="0 0 0.01" color="white" width="4"></a-text>
+  </a-plane>
 
-  <a-sky color="#111"></a-sky>
+  <!-- LIGHTS -->
+  <a-light type="ambient" intensity="1"></a-light>
+  <a-light type="directional" intensity="0.6" position="1 3 2"></a-light>
 
 </a-scene>
-
 </body>
 </html>
