@@ -1,0 +1,11 @@
+Model Information:
+* title:	Grilled sandwich
+* source:	https://sketchfab.com/3d-models/grilled-sandwich-416a6157f92b4b9e98ff425a30de5c41
+* author:	Rainbow (https://sketchfab.com/encoded01)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Grilled sandwich" (https://sketchfab.com/3d-models/grilled-sandwich-416a6157f92b4b9e98ff425a30de5c41) by Rainbow (https://sketchfab.com/encoded01) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

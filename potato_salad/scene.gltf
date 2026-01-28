@@ -1,0 +1,554 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 32677,
+      "max": [
+        0.6024048328399658,
+        1.1894872188568115,
+        0.5811846852302551
+      ],
+      "min": [
+        -1.2434340715408325,
+        -0.659290611743927,
+        -0.35591357946395874
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 392124,
+      "componentType": 5126,
+      "count": 32677,
+      "max": [
+        0.9999517202377319,
+        0.9999306201934814,
+        0.9999513626098633
+      ],
+      "min": [
+        -0.9999517202377319,
+        -0.9999909400939941,
+        -0.9999513626098633
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 32677,
+      "max": [
+        0.9999385476112366,
+        0.9997329115867615,
+        0.9998821020126343,
+        1.0
+      ],
+      "min": [
+        -0.9999524354934692,
+        -0.999991774559021,
+        -0.9999856352806091,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 32677,
+      "max": [
+        1.0,
+        1.0
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 261416,
+      "componentType": 5126,
+      "count": 32677,
+      "max": [
+        1.0,
+        1.0
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 522832,
+      "componentType": 5126,
+      "count": 32677,
+      "max": [
+        1.0,
+        1.0
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 113160,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 784248,
+      "componentType": 5126,
+      "count": 1410,
+      "max": [
+        1.0155949592590332,
+        1.0155949592590332,
+        0.720294177532196
+      ],
+      "min": [
+        -1.0155949592590332,
+        -1.0155949592590332,
+        0.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 801168,
+      "componentType": 5126,
+      "count": 1410,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 784248,
+      "componentType": 5126,
+      "count": 1410,
+      "max": [
+        0.4999999403953552,
+        0.5
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 452640,
+      "componentType": 5125,
+      "count": 7680,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 818088,
+      "componentType": 5126,
+      "count": 340,
+      "max": [
+        0.15771342813968658,
+        1.5325775146484375,
+        9.737182615765505e-09
+      ],
+      "min": [
+        -0.15771342813968658,
+        -2.112988477165345e-05,
+        -0.07778383791446686
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 822168,
+      "componentType": 5126,
+      "count": 340,
+      "max": [
+        0.9362382292747498,
+        0.9163364768028259,
+        0.9998119473457336
+      ],
+      "min": [
+        -0.9362382292747498,
+        -0.6916581392288208,
+        -0.99985671043396
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 795528,
+      "componentType": 5126,
+      "count": 340,
+      "max": [
+        1.0,
+        1.0000011920928955
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 483360,
+      "componentType": 5125,
+      "count": 1776,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "LordDiego (https://sketchfab.com/LordDiego)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/potato-salad-3december2020-day14-fcd40d60d1384da196fbf105499ae54a",
+      "title": "Potato Salad - #3December2020 Day14"
+    },
+    "generator": "Sketchfab-12.66.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 490464,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 798248,
+      "byteOffset": 490464,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 826248,
+      "byteOffset": 1288712,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 522832,
+      "byteOffset": 2114960,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 2637792,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_materials_transmission"
+  ],
+  "images": [
+    {
+      "uri": "textures/Salad_Vegetables_baseColor.png"
+    },
+    {
+      "uri": "textures/Salad_Vegetables_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/Salad_Vegetables_normal.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Salad_Vegetables",
+      "normalTexture": {
+        "index": 2,
+        "scale": 0.6
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      }
+    },
+    {
+      "alphaMode": "BLEND",
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_transmission": {
+          "transmissionFactor": 0.9
+        }
+      },
+      "name": "Glass",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.391768,
+          0.484589,
+          0.508527,
+          0.25
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.2
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "MetalShine_0.1",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.8,
+          0.8,
+          0.8,
+          1.0
+        ],
+        "roughnessFactor": 0.1
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Potatoe_Part_1.202_Salad_Vegetables_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3,
+            "TEXCOORD_1": 4,
+            "TEXCOORD_2": 5
+          },
+          "indices": 6,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Salad_Bowl_Glass_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 8,
+            "POSITION": 7,
+            "TEXCOORD_0": 9
+          },
+          "indices": 10,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Salad_Spoon_MetalShine_0.1_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 12,
+            "POSITION": 11,
+            "TEXCOORD_0": 13
+          },
+          "indices": 14,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "b9af7772ba0d432faa28d8374dab29c5.fbx"
+    },
+    {
+      "children": [
+        3,
+        5,
+        7
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4
+      ],
+      "matrix": [
+        -87.61967452062981,
+        14.437339218677767,
+        45.98212558357561,
+        0.0,
+        -48.19529599695447,
+        -26.097401160940382,
+        -83.64291703743983,
+        0.0,
+        -0.07567188921927756,
+        -95.44887319846083,
+        29.8245763260852,
+        0.0,
+        -15.567970275878906,
+        65.74720764160156,
+        38.815338134765625,
+        1.0
+      ],
+      "name": "Potatoe_Part_1.202"
+    },
+    {
+      "mesh": 0,
+      "name": "Potatoe_Part_1.202_Salad_Vegetables_0"
+    },
+    {
+      "children": [
+        6
+      ],
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.629206793918314e-05,
+        -99.99999999999868,
+        0.0,
+        0.0,
+        99.99999999999868,
+        -1.629206793918314e-05,
+        0.0,
+        0.0,
+        4.253417015075684,
+        0.0,
+        1.0
+      ],
+      "name": "Salad_Bowl"
+    },
+    {
+      "mesh": 1,
+      "name": "Salad_Bowl_Glass_0"
+    },
+    {
+      "children": [
+        8
+      ],
+      "matrix": [
+        1.9470718859437852e-05,
+        5.551115123125783e-15,
+        -99.99999999999811,
+        0.0,
+        -68.63155686816673,
+        -72.7303884346249,
+        -1.3363057488335883e-05,
+        0.0,
+        -72.73038843462352,
+        68.63155686816805,
+        -1.416112946905912e-05,
+        0.0,
+        141.33309936523438,
+        122.63355255126953,
+        2.0737408704007976e-05,
+        1.0
+      ],
+      "name": "Salad_Spoon"
+    },
+    {
+      "mesh": 2,
+      "name": "Salad_Spoon_MetalShine_0.1_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ]
+}
